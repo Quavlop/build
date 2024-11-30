@@ -1,0 +1,138 @@
+services:
+  psql:
+    image: "postgres:16"
+    ports:
+      - "5432:5432"
+    env_file:
+    - ./.env
+    environment:
+      POSTGRES_DB : ${POSTGRES_DB_DATABASE}
+      POSTGRES_USER : ${POSTGRES_DB_USER}
+      POSTGRES_PASSWORD : ${POSTGRES_DB_PASSWORD}
+    restart: always
+    volumes:
+      - /var/chesshouzs/storage/psql/data:/var/lib/postgresql/data
+    networks:
+      - app
+  redis:
+    image: "redis:5.0.8"
+    command: redis-server --appendonly yes
+    restart: always
+    ports:
+      - "6380:6379"
+    volumes:
+      - /var/chesshouzs/storage/redis:/data:rw
+    networks:
+      - app      
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - app
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE: 'false'
+    volumes:
+      - ./kafka_data:/var/lib/kafka/data
+    networks:
+      - app
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    depends_on:
+      - kafka
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    networks:
+      - app  
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra
+    ports:
+      - "9042:9042"  
+    volumes:
+      - /var/lib/cassandra:/var/lib/cassandra 
+    environment:
+      - CASSANDRA_CLUSTER_NAME=cluster-1
+      - CASSANDRA_DC=dc-1
+      - CASSANDRA_RACK=rack-1    
+    networks:
+      - app
+  node-core-api-service:
+    build:
+      context: ${NODE_CORE_API_SERVICE_PATH}
+      dockerfile: Dockerfile
+    env_file:
+      - ${NODE_CORE_API_SERVICE_PATH}/.env
+    networks:
+      - app
+    depends_on:
+      - kafka
+      - zookeeper
+      - redis
+      - psql
+      - cassandra
+    ports: 
+      - "8000"
+  spring-game-rest-service:
+    build:
+      context: ${SPRING_GAME_REST_SERVICE_PATH}
+      dockerfile: Dockerfile
+    env_file:
+      - ${SPRING_GAME_REST_SERVICE_PATH}/.env
+    networks:
+      - app
+    depends_on:
+      - node-core-api-service
+    ports: 
+      - "5050"
+  go-game-ws-service:
+    build:
+      context: ${GO_GAME_WS_SERVICE_PATH}
+      dockerfile: Dockerfile
+    env_file:
+      - ${GO_GAME_WS_SERVICE_PATH}/.env
+    networks:
+      - app
+    depends_on:
+      - spring-game-rest-service  
+    ports:
+      - "5000"
+  client-service:
+    build:
+      context: ${CLIENT_SERVICE_PATH}
+      dockerfile: Dockerfile
+    env_file:
+      - ${CLIENT_SERVICE_PATH}/.env
+    networks:
+      - app
+    depends_on:
+      - go-game-ws-service                    
+    ports:
+      - "8080:80"
+    environment:
+      GO_GAME_WS_BASE_URL : http://go-game-ws-service:5000
+      SPRING_GAME_REST_BASE_URL : http://spring-game-rest-service:5050
+      NODE_CORE_API_BASE_URL : http://node-core-api-service:8000
+
+networks:
+  app:
+    driver: bridge
+
+    
