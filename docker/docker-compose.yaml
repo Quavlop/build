@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD : ${POSTGRES_DB_PASSWORD}
     restart: always
     volumes:
-      - /var/chesshouzs/storage/psql/data:/var/lib/postgresql/data
+      - ${PSQL_VOLUMES}:/var/lib/postgresql/data
     networks:
       - app
   redis:
@@ -21,7 +21,7 @@ services:
     ports:
       - "6380:6379"
     volumes:
-      - /var/chesshouzs/storage/redis:/data:rw
+      - ${REDIS_VOLUMES}:/data:rw
     networks:
       - app      
   zookeeper:
@@ -46,7 +46,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE: 'false'
     volumes:
-      - ./kafka_data:/var/lib/kafka/data
+      - ${KAFKA_VOLUMES}:/var/lib/kafka/data
     networks:
       - app
   kafka-ui:
@@ -67,7 +67,7 @@ services:
     ports:
       - "9042:9042"  
     volumes:
-      - /var/lib/cassandra:/var/lib/cassandra 
+      - ${CASSANDRA_VOLUMES}:/var/lib/cassandra 
     environment:
       - CASSANDRA_CLUSTER_NAME=cluster-1
       - CASSANDRA_DC=dc-1
