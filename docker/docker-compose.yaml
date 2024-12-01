@@ -2,7 +2,7 @@ services:
   psql:
     image: "postgres:16"
     ports:
-      - "5432:5432"
+      - "5432"
     env_file:
     - ./.env
     environment:
@@ -30,7 +30,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "2181:2181"
+      - "2181"
     networks:
       - app
   kafka:
@@ -38,7 +38,7 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"
+      - "9092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -54,7 +54,7 @@ services:
     depends_on:
       - kafka
     ports:
-      - "8081:8080"
+      - "8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
@@ -65,7 +65,7 @@ services:
     image: cassandra:latest
     container_name: cassandra
     ports:
-      - "9042:9042"  
+      - "9042"  
     volumes:
       - ${CASSANDRA_VOLUMES}:/var/lib/cassandra 
     environment:
