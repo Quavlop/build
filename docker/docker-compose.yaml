@@ -81,7 +81,6 @@ services:
     env_file:
       - ${NODE_CORE_API_SERVICE_PATH}/.env
     volumes:
-      - ${NODE_CORE_API_SERVICE_PATH}:/app 
       - ${NODE_CORE_API_SERVICE_PATH}/.env:/app/.env    
     depends_on:
       - kafka
@@ -100,7 +99,6 @@ services:
     env_file:
       - ${SPRING_GAME_REST_SERVICE_PATH}/.env
     volumes:
-      - ${SPRING_GAME_REST_SERVICE_PATH}:/app 
       - ${SPRING_GAME_REST_SERVICE_PATH}/.env:/app/.env          
     depends_on:
       - node-core-api-service
@@ -116,7 +114,6 @@ services:
     env_file:
       - ${GO_GAME_WS_SERVICE_PATH}/.env
     volumes:
-      - ${GO_GAME_WS_SERVICE_PATH}:/app 
       - ${GO_GAME_WS_SERVICE_PATH}/.env:/app/.env          
     depends_on:
       - spring-game-rest-service  
@@ -131,7 +128,6 @@ services:
     env_file:
       - ${CLIENT_SERVICE_PATH}/.env
     volumes:
-      - ${CLIENT_SERVICE_PATH}:/app 
       - ${CLIENT_SERVICE_PATH}/.env:/app/.env        
     depends_on:
       - go-game-ws-service                    
