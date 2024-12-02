@@ -90,6 +90,8 @@ services:
       - cassandra
     ports: 
       - "8000"
+    networks:
+      - app      
   spring-game-rest-service:
     build:
       context: ${SPRING_GAME_REST_SERVICE_PATH}
@@ -102,6 +104,8 @@ services:
       - node-core-api-service
     ports: 
       - "5050"
+    networks:
+      - app      
   go-game-ws-service:
     build:
       context: ${GO_GAME_WS_SERVICE_PATH}
@@ -114,6 +118,8 @@ services:
       - spring-game-rest-service  
     ports:
       - "5000"
+    networks:
+      - app      
   client-service:
     build:
       context: ${CLIENT_SERVICE_PATH}
