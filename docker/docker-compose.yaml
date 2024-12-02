@@ -1,7 +1,7 @@
 services:
   psql:
     image: "postgres:16"
-    ports:
+    expose:
       - "5432"
     env_file:
     - ./.env
@@ -18,7 +18,7 @@ services:
     image: "redis:5.0.8"
     command: redis-server --appendonly yes
     restart: always
-    ports:
+    expose:
       - "6379"
     volumes:
       - ${REDIS_VOLUMES}:/data:rw
@@ -29,7 +29,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    ports:
+    expose:
       - "2181"
     networks:
       - app
@@ -37,7 +37,7 @@ services:
     image: confluentinc/cp-kafka:7.4.0
     depends_on:
       - zookeeper
-    ports:
+    expose:
       - "9092"
     environment:
       KAFKA_BROKER_ID: 1
@@ -53,7 +53,7 @@ services:
     image: provectuslabs/kafka-ui:latest
     depends_on:
       - kafka
-    ports:
+    expose:
       - "8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: local
@@ -64,7 +64,7 @@ services:
   cassandra:
     image: cassandra:latest
     container_name: cassandra
-    ports:
+    expose:
       - "9042"  
     volumes:
       - ${CASSANDRA_VOLUMES}:/var/lib/cassandra 
@@ -86,7 +86,7 @@ services:
       - redis
       - psql
       - cassandra
-    ports: 
+    expose: 
       - "8000"
     networks:
       - app        
@@ -98,7 +98,7 @@ services:
       - ${SPRING_GAME_REST_SERVICE_PATH}/.env
     depends_on:
       - node-core-api-service
-    ports: 
+    expose: 
       - "5050"
       - "9090"
     networks:
@@ -111,7 +111,7 @@ services:
       - ${GO_GAME_WS_SERVICE_PATH}/.env
     depends_on:
       - spring-game-rest-service  
-    ports:
+    expose:
       - "5000"
     networks:
       - app      
