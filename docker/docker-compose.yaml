@@ -80,8 +80,6 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ${NODE_CORE_API_SERVICE_PATH}/.env
-    networks:
-      - app
     depends_on:
       - kafka
       - zookeeper
@@ -91,15 +89,13 @@ services:
     ports: 
       - "8000"
     networks:
-      - app      
+      - app        
   spring-game-rest-service:
     build:
       context: ${SPRING_GAME_REST_SERVICE_PATH}
       dockerfile: Dockerfile
     env_file:
       - ${SPRING_GAME_REST_SERVICE_PATH}/.env
-    networks:
-      - app
     depends_on:
       - node-core-api-service
     ports: 
@@ -112,8 +108,6 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ${GO_GAME_WS_SERVICE_PATH}/.env
-    networks:
-      - app
     depends_on:
       - spring-game-rest-service  
     ports:
@@ -126,8 +120,6 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ${CLIENT_SERVICE_PATH}/.env
-    networks:
-      - app
     depends_on:
       - go-game-ws-service                    
     ports:
@@ -136,6 +128,8 @@ services:
       GO_GAME_WS_BASE_URL : http://go-game-ws-service:5000
       SPRING_GAME_REST_BASE_URL : http://spring-game-rest-service:5050
       NODE_CORE_API_BASE_URL : http://node-core-api-service:8000
+    networks:
+      - app    
 
 networks:
   app:
