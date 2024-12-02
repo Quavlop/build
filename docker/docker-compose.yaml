@@ -124,7 +124,7 @@ services:
     depends_on:
       - go-game-ws-service                    
     ports:
-      - "8080:80"
+      - "8080:8080"
     environment:
       GO_GAME_WS_BASE_URL : http://go-game-ws-service:5000
       SPRING_GAME_REST_BASE_URL : http://spring-game-rest-service:5050
