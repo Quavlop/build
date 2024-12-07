@@ -144,6 +144,9 @@ services:
       context: ../nginx
     volumes: 
       - ../nginx/nginx.conf:/etc/nginx/nginx.conf 
+      - ../nginx/conf.d/proxy-go-game-ws.conf:/etc/nginx/conf.d/proxy-go-game-ws.conf
+      - ../nginx/conf.d/proxy-spring-game-rest.conf:/etc/nginx/conf.d/proxy-spring-game-rest.conf
+      - ../nginx/conf.d/proxy-node-core-api.conf:/etc/nginx/conf.d/proxy-node-core-api.conf
     ports:
       - "80:80" 
       - "443:443"
