@@ -31,6 +31,9 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     expose:
       - "2181"
+    volumes:
+      - ${ZOOKEEPER_VOLUMES}:/var/lib/zookeeper/data
+      - ${ZOOKEEPER_VOLUMES}:/var/lib/zookeeper/log      
     networks:
       - app
   kafka:
