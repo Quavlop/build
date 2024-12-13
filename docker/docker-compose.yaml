@@ -34,6 +34,7 @@ services:
     volumes:
       - ${ZOOKEEPER_VOLUMES}:/var/lib/zookeeper/data
       - ${ZOOKEEPER_VOLUMES}:/var/lib/zookeeper/log      
+      entrypoint: ["sh", "-c", "rm -f /var/lib/zookeeper/data/meta.properties && /etc/confluent/docker/run"]
     networks:
       - app
   kafka:
