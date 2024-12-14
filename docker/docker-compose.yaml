@@ -34,7 +34,7 @@ services:
     volumes:
       - ${ZOOKEEPER_VOLUMES}:/var/lib/zookeeper/data
       - ${ZOOKEEPER_VOLUMES}:/var/lib/zookeeper/log      
-      entrypoint: ["sh", "-c", "rm -f /var/lib/zookeeper/data/meta.properties && /etc/confluent/docker/run"]
+    entrypoint: ["sh", "-c", "rm -f /var/lib/zookeeper/data/meta.properties && /etc/confluent/docker/run"]
     networks:
       - app
   kafka:
@@ -151,6 +151,7 @@ services:
       - ../nginx/conf.d/proxy-go-game-ws.conf:/etc/nginx/conf.d/proxy-go-game-ws.conf
       - ../nginx/conf.d/proxy-spring-game-rest.conf:/etc/nginx/conf.d/proxy-spring-game-rest.conf
       - ../nginx/conf.d/proxy-node-core-api.conf:/etc/nginx/conf.d/proxy-node-core-api.conf
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     ports:
       - "80:80" 
       - "443:443"
