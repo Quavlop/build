@@ -31,9 +31,9 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     expose:
       - "2181"
-    volumes:
-      - ${ZOOKEEPER_VOLUMES}:/var/lib/zookeeper/data
-      - ${ZOOKEEPER_VOLUMES}:/var/lib/zookeeper/log      
+    # volumes:
+      # - ${ZOOKEEPER_VOLUMES}:/var/lib/zookeeper/data
+      # - ${ZOOKEEPER_VOLUMES}:/var/lib/zookeeper/log      
     entrypoint: ["sh", "-c", "rm -f /var/lib/zookeeper/data/meta.properties && /etc/confluent/docker/run"]
     networks:
       - app
@@ -50,7 +50,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE: 'false'
     volumes:
-      - ${KAFKA_VOLUMES}:/var/lib/kafka/data
+      - ${KAFKA_VOLUMES}:/kafka/kafka-logs
     networks:
       - app
   kafka-ui:
@@ -72,12 +72,18 @@ services:
       - "9042"  
     volumes:
       - ${CASSANDRA_VOLUMES}:/var/lib/cassandra 
+      - ../cassandra.yaml:/etc/cassandra/cassandra.yaml 
     environment:
       - CASSANDRA_CLUSTER_NAME=cluster-1
       - CASSANDRA_DC=dc-1
       - CASSANDRA_RACK=rack-1    
     networks:
       - app
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "DESCRIBE KEYSPACES"]
+      interval: 10s
+      timeout: 5s
+      retries: 5      
   node-core-api-service:
     build:
       context: ${NODE_CORE_API_SERVICE_PATH}
