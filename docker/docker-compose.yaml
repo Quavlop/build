@@ -150,7 +150,6 @@ services:
     networks:
       - app    
   nginx:
-    image: nginx:1.4.0
     build: 
       context: ../nginx
     volumes: 
